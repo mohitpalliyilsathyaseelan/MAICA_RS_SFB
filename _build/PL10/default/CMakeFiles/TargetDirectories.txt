@@ -1,5 +1,0 @@
-C:/Users/c74305/Desktop/MAICA/SF/_build/PL10/default/CMakeFiles/PL10_default_default_XC32_compile.dir
-C:/Users/c74305/Desktop/MAICA/SF/_build/PL10/default/CMakeFiles/PL10_default_image_v07FH2i6.dir
-C:/Users/c74305/Desktop/MAICA/SF/_build/PL10/default/CMakeFiles/PL10_default_Bin2Hex.dir
-C:/Users/c74305/Desktop/MAICA/SF/_build/PL10/default/CMakeFiles/edit_cache.dir
-C:/Users/c74305/Desktop/MAICA/SF/_build/PL10/default/CMakeFiles/rebuild_cache.dir

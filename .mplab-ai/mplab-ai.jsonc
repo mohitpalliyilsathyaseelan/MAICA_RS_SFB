@@ -3,5 +3,20 @@
   "instructions": [
     ".mplab-ai\\Rules\\PL10.md",
     ".mplab-ai\\Plan\\Plan.md"
-  ]
+  ],
+  "agent": {
+    "git-agent" : {
+      "mode": "primary",
+      "description": "git-agent",
+      "prompt": "{file:C:\\Users\\c74305\\Desktop\\MAICA\\MAICA_RS_SFB\\.mplab-ai\\Agents\\git-agent.md}",
+      "model": "microchip-internal/claude-sonnet-4-6",
+      "permission": {
+        "edit": "allow",
+        "read": "allow",
+        "grep": "allow",
+        "glob": "allow",
+        "bash": "allow"
+      }
+    } 
+  }
 }
