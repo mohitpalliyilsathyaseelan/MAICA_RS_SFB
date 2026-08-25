@@ -1,0 +1,7 @@
+{
+  "$schema": "https://app.kilo.ai/config.json",
+  "instructions": [
+    ".mplab-ai\\Rules\\PL10.md",
+    ".mplab-ai\\Plan\\Plan.md"
+  ]
+}
