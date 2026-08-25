@@ -1,13 +1,137 @@
+﻿# PL10 — Interactive LED Toggle (EIC Interrupt-Driven)
 
-# PL10
+Toggle the user LED (LED0) on each press of the user switch (SW0) on the
+**PIC32CM PL10 Curiosity Nano** (EV10P22A).
+The switch is serviced by the **EIC (External Interrupt Controller)** — an interrupt fires on the
+falling edge of PB03 and the ISR callback toggles the LED.
+No polling loop or timer is required.
 
-## Structure
+---
 
-| Path                    | Purpose                                                                                                                             |
-|-------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
-| _build                  | The [CMake build tree](https://cmake.org/cmake/help/latest/manual/cmake.1.html#introduction-to-cmake-buildsystems), can be deleted. |
-| cmake                   | Generated [CMake](https://cmake.org/) files. May be deleted if user.cmake has not been added                                        |
-| .vscode                 | See [VSCode](https://code.visualstudio.com/docs/getstarted/settings)                                                                |
-| .vscode\settings.json   | Workspace specific settings                                                                                                         |
-| .vscode\PL10.mplab.json | The MPLAB project file, should not be deleted                                                                                       |
-| out                     | Final build artifacts                                                                                                               |
+## Target & Toolchain
+
+| Item | Value |
+|---|---|
+| MCU | PIC32CM6408PL10048 (Arm Cortex-M0+) |
+| Board | PIC32CM PL10 Curiosity Nano (EV10P22A) |
+| Framework | MPLAB Harmony v3 (MCC), super-loop (`main` → `SYS_Tasks` → `APP_Tasks`) |
+| Compiler | Microchip XC32 v5.10 |
+| Build system | CMake + Ninja |
+| Build tree | `_build/PL10/default/` |
+| Output | `out/PL10/default.elf`, `out/PL10/default.hex` |
+
+---
+
+## Hardware Pin Mapping
+
+Verified against the PIC32CM PL10 Curiosity Nano User Guide (§4).
+
+| Signal | Pin | MCC Name | Electrical Behaviour |
+|---|---|---|---|
+| User LED (LED0) | PB02 | `GPIO_PB02` | **Active-low** — LOW = LED ON, HIGH = LED OFF |
+| User Switch (SW0) | PB03 | `GPIO_PB03` | **Active-low** — pressed pulls pin to GND (falling edge). Internal pull-up enabled. |
+
+> PB03 is shared with the on-board debugger (DBG2 / GPIO0). This is normal and does not affect EIC interrupt use.
+
+---
+
+## Architecture
+
+```
+SYS_Initialize()
+  └── PORT_Initialize()   — PB02 output, PB03 input + pull-up + PMUX to EIC
+  └── EIC_Initialize()    — EXTINT3 falling-edge, interrupt enabled
+
+APP_Initialize()
+  └── GPIO_Initialize()              — drive PB02 HIGH (LED off at startup)
+  └── EIC_CallbackRegister(EIC_PIN_3, Button_Callback, 0)
+  └── EIC_InterruptEnable(EIC_PIN_3)
+
+ISR: EIC_InterruptHandler()
+  └── Button_Callback()
+        └── GPIO_LED_Toggle()        — toggle PB02 on every falling edge
+```
+
+- LED toggling is **entirely interrupt-driven** — `APP_STATE_IDLE` does nothing.
+- Application code only calls the `gpio.h` API; no direct `GPIO_PB02_*` / `GPIO_PB03_*` macro calls in `app.c`.
+
+---
+
+## GPIO Module (`gpio.c` / `gpio.h`)
+
+Located in `config.mcc/src/`. These are the **only** GPIO functions the application layer calls.
+
+| Function | Description |
+|---|---|
+| `GPIO_Initialize()` | Drives PB02 HIGH — LED off at startup |
+| `GPIO_LED_Off()` | PB02 active-low → drive HIGH |
+| `GPIO_LED_On()` | PB02 active-low → drive LOW |
+| `GPIO_LED_Toggle()` | Toggles PB02 via `GPIO_PB02_Toggle()` |
+| `GPIO_Tasks()` | Idle stub — called from `APP_STATE_SERVICE_TASKS` |
+
+---
+
+## Project Structure
+
+| Path | Purpose |
+|---|---|
+| `config.mcc/src/app.c` | Application state machine; EIC callback registration |
+| `config.mcc/src/app.h` | App states (`INIT`, `IDLE`, `SERVICE_TASKS`), `APP_DATA` struct |
+| `config.mcc/src/gpio.c` | GPIO module — PB02 PLIB wrappers |
+| `config.mcc/src/gpio.h` | GPIO module header — LED API |
+| `config.mcc/src/main.c` | Entry point; calls `SYS_Initialize`, `APP_Initialize`, `APP_Tasks` |
+| `config.mcc/src/config/default/` | MCC-generated PLIB source (do not edit) |
+| `config.mcc/src/config/default/peripheral/eic/` | `plib_eic.c/.h` — EIC PLIB with `EIC_PIN_3` |
+| `config.mcc/src/config/default/peripheral/port/` | `plib_port.h` — `GPIO_PB02_*` macros |
+| `cmake/PL10/default/user.cmake` | Adds `app.c` and `gpio.c` to the CMake build |
+| `_build/PL10/default/` | CMake build tree (can be deleted and regenerated) |
+| `cmake/` | Generated CMake files (safe to delete if `user.cmake` is absent) |
+| `out/PL10/` | Final build artifacts (`default.elf`, `default.hex`) |
+| `.vscode/` | VS Code workspace settings and MPLAB project file |
+
+---
+
+## Build
+
+```
+# From the repo root — ninja path as installed by MPLAB X
+C:\Users\<user>\.mplab\app-finder\apps\ninja\v1.13.2\ninja.exe -C _build\PL10\default
+```
+
+Or trigger a build from within MPLAB X / VS Code using the MPLAB extension.
+
+**Last verified build result:** 1284 bytes text, 0 warnings, 0 errors.
+
+---
+
+## Flash & Test
+
+1. Connect the PIC32CM PL10 Curiosity Nano via USB (PKOB nano on-board debugger).
+2. Program `out/PL10/default.hex` using MPLAB X IPE or the MPLAB VS Code extension.
+3. **Expected behaviour:**
+   - LED0 is **OFF** at power-up.
+   - Each press of SW0 fires the EIC ISR and **toggles** LED0 (ON ↔ OFF).
+   - No LED activity occurs without a button press — there is no polling loop.
+
+---
+
+## Acceptance Criteria
+
+- [x] GPIO module (`gpio.h`, `gpio.c`) created and linked to the CMake build
+- [x] LED0 is OFF at power-up
+- [x] LED0 toggles on each SW0 press via EIC interrupt callback
+- [x] No polling loop or timer used; logic is entirely interrupt-driven
+- [x] Only `gpio.h` API used in the application layer — no direct `GPIO_PB02_*` calls in `app.c`
+- [x] Only MCC/PLIB APIs used; XC32-clean build confirmed (0 warnings, 0 errors)
+
+---
+
+## Status
+
+**COMPLETE** — build verified: 1284 bytes text, 0 warnings, 0 errors.
+
+- `gpio.h` / `gpio.c` created with LED control API using `GPIO_PB02_*` PLIB macros
+- EIC PLIB generated by MCC (`plib_eic.c/h`) with `EIC_PIN_3` mapped to PB03
+- `app.h` / `app.c`: `GPIO_Initialize()`, `EIC_CallbackRegister(EIC_PIN_3, Button_Callback, 0)`, `EIC_InterruptEnable(EIC_PIN_3)` active
+- `app.c` / `gpio.c` added to `cmake/PL10/default/user.cmake`
+- Ninja build produces `default.elf` + `default.hex` with zero errors and zero warnings

@@ -27,18 +27,10 @@ void APP_Initialize(void)
     /* Initialize GPIO module */
     GPIO_Initialize();
     
-    /* 
-     * Register EIC callback for PB03 falling edge
-     * 
-     * NOTE: EIC peripheral must be configured in MCC first.
-     * Once configured, plib_eic.h will be added to definitions.h,
-     * and EIC_PIN_3 will be defined for PB03.
-     * 
-     * Uncomment the following lines once EIC is added via MCC:
-     * 
-     * EIC_CallbackRegister(EIC_PIN_3, Button_Callback, 0);
-     * EIC_InterruptEnable(EIC_PIN_3);
-     */
+    /* Register EIC callback for PB03 falling edge (EIC_PIN_3).
+     * plib_eic.h is MCC-generated; EIC_PIN_3 maps PB03 EXTINT channel. */
+    EIC_CallbackRegister(EIC_PIN_3, Button_Callback, 0);
+    EIC_InterruptEnable(EIC_PIN_3);
     
     /* Set initial state */
     appData.state = APP_STATE_IDLE;

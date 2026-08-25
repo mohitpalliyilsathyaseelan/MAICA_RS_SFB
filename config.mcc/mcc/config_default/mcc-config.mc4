@@ -8,12 +8,13 @@ modules:
 - cmsis
 - core
 - dfp
+- eic
 - evsys
 generatedFileHashHistoryMap:
 - file: ..\src\config\default\PIC32CM6408PL10048.ld
   hash: ccfca360f495b1367d181d4a59c53157651ae7354884164f7aba34c9637e1d50
 - file: ..\src\config\default\definitions.h
-  hash: 7c30b9e18423a995588db444eca9822031ea7afff81c391ce7eaf93ae5b55a8f
+  hash: 7d0aaab967c929c29931bff25ded8c6c8a88d30624ae036ba65d21e7ea51caef
 - file: ..\src\config\default\device.h
   hash: cbe5a5f60fcaf3cb182092323aa3c71cf2414fed36e66337f5827197fd2e2325
 - file: ..\src\config\default\device_cache.h
@@ -23,23 +24,27 @@ generatedFileHashHistoryMap:
 - file: ..\src\config\default\exceptions.c
   hash: d1567a190561858cc1cb7e796cf1a29720e52b9799bbd88b087993d8539e137f
 - file: ..\src\config\default\initialization.c
-  hash: f2800fc8a2b23b07612bfe758204f01574019d9931f2cd4a31ffc27889f4c11d
+  hash: 35aa8321d3f11fb40995fce54655ec31373bb7554ba8faabdf8863375ab5637e
 - file: ..\src\config\default\interrupts.c
-  hash: 99d401a9c6049a726181964cbdc077536755d015ff8198e8d710a77bf0cd1073
+  hash: 62b6c8763c7840e8c29ed5e2a786f449f41fa82fae6b30bb069af945f59c613b
 - file: ..\src\config\default\interrupts.h
-  hash: 90657d3fc02bc4951e5569052befa59e190b3288a4e1335eecb1561bd0b73c05
+  hash: 079c7e2af160afc179727614446300697f5c2619ee172b33c252f51466b340d3
 - file: ..\src\config\default\libc_syscalls.c
   hash: c9afc1b1257829415a1a6746ce3744f0a768b339d59fff2ab3ca1fab58b2a916
 - file: ..\src\config\default\peripheral\clock\plib_clock.c
-  hash: 78efd905fd477d403a153677d5f12bec730d8c2eca0a561a80869c9a4bb0b959
+  hash: 88d89d38d8ce5cdf6247b9bf3af75e2161d5c34ab3e21e49c1e81ac3c97d5d7e
 - file: ..\src\config\default\peripheral\clock\plib_clock.h
   hash: 5c751a5947890774f3971015256f9dcff88778669b18b808f57c07a8b6944882
+- file: ..\src\config\default\peripheral\eic\plib_eic.c
+  hash: 4896d5359e1c99133ec947982b2b72bba5c9503280767456947a154602aac5f8
+- file: ..\src\config\default\peripheral\eic\plib_eic.h
+  hash: 5ccb84fb36d2895af60a630597d69345461668c150c8fcab03eb6349219bef8b
 - file: ..\src\config\default\peripheral\evsys\plib_evsys.c
-  hash: 7bb3bc0d60c4cf18638d76d3dfe9e5b13d2915d09e6a8a7bc4b5faae870c8f48
+  hash: b63d852608a3403c73a265c7ca5095ec84a76e70d977dd018c926c1134850468
 - file: ..\src\config\default\peripheral\evsys\plib_evsys.h
-  hash: f7d08eb8162f271ce1db384c082586a6624e506aa7f502c64c4ab5a1aadac47d
+  hash: 7bf0ec7eb0763980ca2f91b2a2dbc7d090dad0294db9248c57698b77e3d2216e
 - file: ..\src\config\default\peripheral\nvic\plib_nvic.c
-  hash: d17bdfa86168bdfc1dd73f6785fdae850b5e041462997d96caf174cad18431f6
+  hash: f400a6d52a23c306aed82dfd2523b7ec5a9c185903c33defd67a1a4afc3681f1
 - file: ..\src\config\default\peripheral\nvic\plib_nvic.h
   hash: 9936ac782115af41003255283fa2f603f4ff2212d16275b7c80ea8d067a9e208
 - file: ..\src\config\default\peripheral\port\plib_port.c
